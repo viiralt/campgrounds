@@ -17,7 +17,7 @@
                 <h4><a><%= campground.name %></a></h4>
                 <p><%= campground.description %></p>
                 <p>
-                    <em>Submitted By <strong><%= campground.author.username %></strong>,
+                    <em>Submitted By <a href="/users/<%= campground.author.id %>"><%= campground.author.username %></a>,
                     <%= moment(campground.createdAt).fromNow() %></em>
                 </p>
                 <% if(currentUser && campground.author.id.equals(currentUser._id) || currentUser && currentUser.isAdmin){ %>
@@ -86,3 +86,4 @@
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7FBVmYuUviMgIJSxnOuYGdVJHcuPEMOw&callback=initMap">
 </script>
 <% include ../partials/footer %>
+

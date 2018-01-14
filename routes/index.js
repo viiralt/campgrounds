@@ -1,8 +1,9 @@
 //==============
 // DEPENDENCIES
 //==============
-var User = require('../models/user'),
-    passport = require('passport'),
+var Campground = require('../models/campground'),
+    User       = require('../models/user'),
+    passport   = require('passport'),
     express = require('express'),
     router = express.Router();
 
@@ -24,7 +25,14 @@ router.get('/register', function(req, res) {
 
 // HANDLE SIGN UP LOGIC
 router.post('/register', function(req, res) {
-  var newUser = new User({username: req.body.username});
+  var newUser = new User({
+    username: req.body.username,
+    firstName: req.body.firstName,
+    lastName: req.body.lastName,
+    email: req.body.email,
+    avatar: req.body.avatar
+  });
+  // eval(require('locus'))
   if(req.body.adminCode === '999bonobo333') {
     newUser.isAdmin = true;
   }
@@ -33,7 +41,7 @@ router.post('/register', function(req, res) {
       console.log(err);
       return res.render("register", {error: err.message});
     } else {
-      passport.authenticate('local')(req, res, function() { // if register is success, auth user and redirect
+      passport.authenticate('local')(req, res, function() {
         req.flash('success', 'Welcome to YelpCamp, ' + user.username + '!');
         res.redirect('/campgrounds');
       });
@@ -63,4 +71,27 @@ router.get('/logout', function(req, res) {
   res.redirect('/campgrounds');
 });
 
+// USER PROFILES
+router.get('/users/:id', function(req, res) {
+  User.findById(req.params.id, function(err, foundUser) {
+    if(err) {
+      req.flash('error', err);
+      res.redirect('/');
+    }
+    // eval(require('locus'))
+    Campground.find().where('author.id').equals(foundUser._id).exec(function(err, campgrounds) {
+      if(err) {
+        req.flash('error', err);
+        res.redirect('/');
+      }
+      res.render('users/show', {user: foundUser, campgrounds: campgrounds});
+    });
+  });
+});
+
 module.exports = router;
+
+
+
+
+
